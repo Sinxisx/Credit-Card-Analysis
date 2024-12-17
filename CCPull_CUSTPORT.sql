@@ -30,7 +30,7 @@ WRITE_OFF_AMT,
 WRITE_OFF_DT, 
 WRITE_OFF_YN,
 CASE WHEN PASTDUE_DAYS = 0 THEN 'PERFORMING'
-WHEN PASTDUE_DAYS >= 1 AND PASTDUE_DAYS =< 30 THEN 'GRACE PERIOD'
+WHEN PASTDUE_DAYS >= 1 AND PASTDUE_DAYS <= 30 THEN 'GRACE PERIOD'
 WHEN PASTDUE_DAYS > 30 THEN 'DELINQUENT'
 END AS CC_STATUS
 FROM PDA.MASTER_LOAN
@@ -110,7 +110,16 @@ OR (Block_code = 'U' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','
 OR (Block_code in ('I','R','L','S','J','A','Q','W','N','O','G','F','D') and Curr_balance > 0)
 OR (Block_code='Z' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','PF','HT','PE','PO','PU','XU','XP','PW','SM') and curr_balance > 0)
 OR (block_code='E' and Curr_balance > 0)
-OR (Block_Code = 'T' and Curr_balance = 0 and EXPIRE2 > '2411'))
+OR (Block_Code = 'T' and Curr_balance = 0 and EXPIRE2 > '{ym}'))
+),
+ML_BAL AS(
+SELECT DISTINCT 
+AGREE_ID,
+MAX(BAL) MTD_MAX_BAL
+FROM PDA.MASTER_LOAN
+WHERE BASE_DT LIKE '20'||'{ym}'||'%'
+AND PRD_NM LIKE '%Credit Card%'
+GROUP BY AGREE_ID
 )
 SELECT *
 FROM CECE 
@@ -118,3 +127,5 @@ INNER JOIN ML
 ON CECE.CARD_NMBR = ML.NOTE_NO
 INNER JOIN C360 
 ON CECE.GCIF_NO = C360.GCIF_NO
+LEFT JOIN ML_BAL
+ON ML.AGREE_ID = ML_BAL.AGREE_ID
