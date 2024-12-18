@@ -30,8 +30,8 @@ WRITE_OFF_AMT,
 WRITE_OFF_DT, 
 WRITE_OFF_YN,
 CASE WHEN PASTDUE_DAYS = 0 THEN 'PERFORMING'
-WHEN PASTDUE_DAYS >= 1 AND PASTDUE_DAYS <= 30 THEN 'GRACE PERIOD'
-WHEN PASTDUE_DAYS > 30 THEN 'DELINQUENT'
+WHEN PASTDUE_DAYS >= 1 AND PASTDUE_DAYS < 30 THEN 'GRACE PERIOD'
+WHEN PASTDUE_DAYS >= 30 THEN 'DELINQUENT'
 END AS CC_STATUS
 FROM PDA.MASTER_LOAN
 WHERE BASE_DT = '{dt}'
@@ -101,14 +101,11 @@ CECE AS (
 SELECT DISTINCT GCIF_NO,CARD_NMBR
 FROM PDA.TBL_BAL_CC
 WHERE BASE_DT = '{dt}'
-AND STATUS IN (1,2) 
-AND CARD_NMBR NOT LIKE '8%' 
-AND CRLIMIT>0
 AND (Block_Code is null
 OR Block_code in(' ','C','H','P','Y','M','K','B')
 OR (Block_code = 'U' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','PF','HT','PE','PO','PU','XU','XP','PW','SM'))
-OR (Block_code in ('I','R','L','S','J','A','Q','W','N','O','G','F','D') and Curr_balance > 0)
-OR (Block_code='Z' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','PF','HT','PE','PO','PU','XU','XP','PW','SM') and curr_balance > 0)
+OR (Block_code in ('I','R','L','S','J','A','Q','W','N','O','G','F','D') and Curr_balance <> 0)
+OR (Block_code='Z' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','PF','HT','PE','PO','PU','XU','XP','PW','SM') and curr_balance <> 0)
 OR (block_code='E' and Curr_balance > 0)
 OR (Block_Code = 'T' and Curr_balance = 0 and EXPIRE2 > '{ym}'))
 ),
