@@ -17,7 +17,7 @@ a.CRLIMIT,
 a.LST_CRLIMIT,
 a.CARD_EXPIR_DTE,
 a.DELQ_HIST_1
-FROM brgprod.V_CPCR241031 a
+FROM brgprod.V_CPCR{dt} a
 WHERE a.ORG = 1 and a.STATUS in(1,2)
 ),
 
@@ -41,6 +41,6 @@ OR (Block_code = 'U' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','
 OR (Block_code in ('I','R','L','S','J','A','Q','W','N','O','G','F','D') and Curr_balance <> 0)
 OR (Block_code='Z' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','PF','HT','PE','PO','PU','XU','XP','PW','SM') and curr_balance <> 0)
 OR (block_code='E' and Curr_balance > 0)
-OR (Block_Code = 'T' and Curr_balance = 0 and EXPIRE2 > '2410'))
+OR (Block_Code = 'T' and Curr_balance = 0 and EXPIRE2 > '{ym}'))
 
 SELECT CARD_NMBR, DELQ_HIST_1 FROM final_cc

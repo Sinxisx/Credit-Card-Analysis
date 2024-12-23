@@ -34,7 +34,7 @@ WHEN PASTDUE_DAYS >= 1 AND PASTDUE_DAYS < 30 THEN 'GRACE PERIOD'
 WHEN PASTDUE_DAYS >= 30 THEN 'DELINQUENT'
 END AS CC_STATUS
 FROM PDA.MASTER_LOAN
-WHERE BASE_DT = '20241031'
+WHERE BASE_DT = '{dt}'
 AND PRD_NM LIKE '%Credit Card%'),
 
 C360 AS (
@@ -79,21 +79,21 @@ CRTRX_MTD,
 CRTRX_AMT_MTD, 
 DBTRX_MTD,
 DBTRX_AMT_MTD
-FROM PDA.CUSTOMER_360 WHERE BASE_DT = '20241031'
+FROM PDA.CUSTOMER_360 WHERE BASE_DT = '{dt}'
 ),
 
 CECE AS (
 SELECT DISTINCT GCIF_NO,
 CARD_NMBR
 FROM PDA.TBL_BAL_CC
-WHERE BASE_DT = '20241031'
+WHERE BASE_DT = '{dt}'
 AND (Block_Code is null
 OR Block_code in(' ','C','H','P','Y','M','K','B')
 OR (Block_code = 'U' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','PF','HT','PE','PO','PU','XU','XP','PW','SM'))
 OR (Block_code in ('I','R','L','S','J','A','Q','W','N','O','G','F','D') and Curr_balance <> 0)
 OR (Block_code='Z' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','PF','HT','PE','PO','PU','XU','XP','PW','SM') and curr_balance <> 0)
 OR (block_code='E' and Curr_balance > 0)
-OR (Block_Code = 'T' and Curr_balance = 0 and EXPIRE2 > '2410'))
+OR (Block_Code = 'T' and Curr_balance = 0 and EXPIRE2 > '{ym}'))
 ),
 
 ML_BAL AS(
@@ -102,7 +102,7 @@ AGREE_ID,
 MAX(BAL) MTD_MAX_OS,
 AVG(BAL) MTD_AVG_OS
 FROM PDA.MASTER_LOAN
-WHERE BASE_DT LIKE '20'||'2410'||'%'
+WHERE BASE_DT LIKE '20'||'{ym}'||'%'
 AND PRD_NM LIKE '%Credit Card%'
 GROUP BY AGREE_ID
 ),
@@ -110,14 +110,14 @@ GROUP BY AGREE_ID
 INST_BAL AS(
 SELECT CARD_NO, SUM(ORG_CURR_AMT) INST_OS
 FROM PDA.MASTER_CC_TRANSACTION
-WHERE BASE_DT LIKE '202410%'
+WHERE BASE_DT LIKE '{ym}'||'%'
 GROUP BY CARD_NO
 ),
 
 MARITAL_STS AS(
 SELECT DISTINCT GCIF_NO, MARITAL_STS_CD 
 FROM PDA.MASTER_DCIF_INDV
-WHERE BASE_DT = '20241031'
+WHERE BASE_DT = '{dt}'
 )
 
 SELECT
