@@ -1,6 +1,7 @@
 WITH 
 main as (
 SELECT
+{dt} AS BASE_DT,
 a.ORG,
 a.TYPE,
 a.CUSTOMER_ORG,
@@ -66,6 +67,7 @@ OR (block_code='E' and Curr_balance > 0)
 OR (Block_Code = 'T' and Curr_balance = 0 and EXPIRE2 > '{ym}'))
 
 SELECT 
+BASE_DT,
 CARD_NMBR,
 DELQ_HIST_1,
 DELQ_HIST_2,
