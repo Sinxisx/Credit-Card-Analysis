@@ -1,0 +1,110 @@
+WITH 
+C360 AS (
+SELECT DISTINCT
+BASE_DT,
+GCIF_NO, 
+SEGMENT, 
+CUST_NM, 
+OPEN_DATE, 
+LAST_ACTIVE_DATE,
+CUST_TP, 
+GENDER_CD, 
+AGE,
+CASE WHEN AGE>=50 THEN 'SAGA'
+ELSE 'NON-SAGA'
+END AS SAGA_FLAG,
+EMPLOYMENT_TYPE, 
+CASE WHEN EMPLOYMENT_TYPE='EMPLOYED PERMANENT' THEN 'FIXED INCOME' 
+ELSE 'NON-FIXED INCOME'
+END AS INCOME_TYPE,
+MARITAL_STATUS,
+MICRO_SEGMENT,
+FUNDING_NOA, 
+FUNDING_BAL,
+FUNDING_AVG, 
+NOA_DORMANT, 
+ALL_DORMANT,
+CC,
+PLOAN,
+TR, 
+PB, 
+PRK, 
+PPB, 
+BG,
+LC, 
+KPR, 
+KPM,
+WOM,
+COLLECT,
+MF,
+BONDS,
+AUM,
+LUM,
+TRB,
+M2U_USER, 
+CRTRX_MTD, 
+CRTRX_AMT_MTD, 
+DBTRX_MTD,
+DBTRX_AMT_MTD
+FROM PDA.CUSTOMER_360_{ym}
+),
+
+CECE AS (
+SELECT DISTINCT GCIF_NO,
+CARD_NMBR
+FROM PDA.TBL_BAL_CC
+WHERE BASE_DT = '{dt}'
+AND (Block_Code is null
+OR Block_code in(' ','C','H','P','Y','M','K','B')
+OR (Block_code = 'U' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','PF','HT','PE','PO','PU','XU','XP','PW','SM'))
+OR (Block_code in ('I','R','L','S','J','A','Q','W','N','O','G','F','D') and Curr_balance <> 0)
+OR (Block_code='Z' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','PF','HT','PE','PO','PU','XU','XP','PW','SM') and curr_balance <> 0)
+OR (block_code='E' and Curr_balance > 0)
+OR (Block_Code = 'T' and Curr_balance = 0 and EXPIRE2 > '{ym}'))
+)
+
+SELECT
+c.BASE_DT,
+c.GCIF_NO,
+c.SEGMENT, 
+c.CUST_NM, 
+c.OPEN_DATE, 
+c.LAST_ACTIVE_DATE, 
+c.CUST_TP, 
+c.GENDER_CD, 
+c.AGE,
+c.SAGA_FLAG,
+c.EMPLOYMENT_TYPE,
+c.INCOME_TYPE,
+c.MARITAL_STATUS,
+c.MICRO_SEGMENT,
+c.FUNDING_NOA, 
+c.FUNDING_BAL,
+c.FUNDING_AVG, 
+c.NOA_DORMANT,
+c.ALL_DORMANT,
+c.CC,
+c.PLOAN,
+c.TR, 
+c.PB, 
+c.PRK, 
+c.PPB, 
+c.BG,
+c.LC, 
+c.KPR, 
+c.KPM,
+c.WOM,
+c.COLLECT,
+c.MF,
+c.BONDS,
+c.AUM,
+c.LUM,
+c.TRB,
+c.M2U_USER,
+c.CRTRX_MTD, 
+c.CRTRX_AMT_MTD, 
+c.DBTRX_MTD,
+c.DBTRX_AMT_MTD
+FROM CECE a
+INNER JOIN C360 c
+ON a.GCIF_NO = c.GCIF_NO
