@@ -40,7 +40,7 @@ CECE AS (
 SELECT DISTINCT GCIF_NO,
 CARD_NMBR
 FROM PDA.TBL_BAL_CC
-WHERE BASE_DT = '20241031'
+WHERE BASE_DT = '{dt}'
 AND (Block_Code is null
 OR Block_code in(' ','C','H','P','Y','M','K','B')
 OR (Block_code = 'U' and user_code2 not in ('RP','PZ','MX','KD','KE','BV','PB','PF','HT','PE','PO','PU','XU','XP','PW','SM'))
